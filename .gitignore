@@ -1,0 +1,13 @@
+# Secrets — never commit
+.env
+
+# Python
+.venv/
+__pycache__/
+
+# macOS
+.DS_Store
+
+# Logs: ignore all, except our synthetic sample
+*.log
+!data/sample.log
