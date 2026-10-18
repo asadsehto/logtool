@@ -1,7 +1,9 @@
 errors = 0
 with open("data/sample.log") as f:
     for line in f:                       # read one line at a time
-        status = line.split()[-1]        # split on spaces, take the LAST field
+        field = line.split()
+        status = field[-1]               # split on spaces, take the LAST field
         if status[0] in "45":            # first digit is 4 or 5 -> error
             errors += 1
-print("errors:", errors)
+        print(f"IP: {field[1]}, Code: {status}")
+print(f"Total errors: {errors}")
