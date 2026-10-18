@@ -5,5 +5,5 @@ with open("data/sample.log") as f:
         status = field[-1]               # split on spaces, take the LAST field
         if status[0] in "45":            # first digit is 4 or 5 -> error
             errors += 1
-        print(f"IP: {field[1]}, Code: {status}")
+            print(f"IP: {field[1]}, Code: {status}")
 print(f"Total errors: {errors}")
