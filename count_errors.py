@@ -7,3 +7,7 @@ with open("data/sample.log") as f:
             errors += 1
             print(f"IP: {field[1]}, Code: {status}")
 print(f"Total errors: {errors}")
+
+print("Numbers from 0 to 4:")
+for i in range(5):
+    print(i)
