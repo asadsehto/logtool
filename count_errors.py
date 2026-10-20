@@ -19,10 +19,16 @@ stream_counts = Counter()
 setvlive_ips = set()
 last_errors = deque(maxlen=10)
 streams_by_app = {}
+badline = 0
 
-with open("data/sample.log") as f:
-    for line in f:
-        entry = parse_line(line)
+with open("data/broken.log") as f:
+    for linenumber, line in enumerate(f, start=1):
+        try:
+            entry = parse_line(line)
+        except ValueError:
+            badline += 1
+            print(f"Error parsing line {linenumber}: {line}")
+            continue
 
         ip_counts[entry["ip"]] += 1
         stream_counts[entry["stream"]] += 1
@@ -39,6 +45,7 @@ with open("data/sample.log") as f:
         streams_by_app[entry["app"]][entry["stream"]] += 1
 
 print(f"Total errors: {errors}")
+print(f"Total bad lines: {badline}")
 print()
 print("Top 3 IPs:")
 for ip, requests in ip_counts.most_common(3):
