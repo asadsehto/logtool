@@ -12,7 +12,7 @@ def parse_line(line):
         "status": int(status),
     }
 
-
+logpath = "data/sample.log"
 errors = 0
 ip_counts = Counter()
 stream_counts = Counter()
@@ -25,9 +25,9 @@ with open("data/broken.log") as f:
     for linenumber, line in enumerate(f, start=1):
         try:
             entry = parse_line(line)
-        except ValueError:
+        except ValueError as e:
             badline += 1
-            print(f"Error parsing line {linenumber}: {line}")
+            print(f"Error parsing line {linenumber}: {line.rstrip()!r} - {e}")
             continue
 
         ip_counts[entry["ip"]] += 1

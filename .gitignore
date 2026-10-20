@@ -11,3 +11,4 @@ __pycache__/
 # Logs: ignore all, except our synthetic sample
 *.log
 !data/sample.log
+!data/broken.log
