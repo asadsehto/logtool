@@ -12,3 +12,4 @@ __pycache__/
 *.log
 !data/sample.log
 !data/broken.log
+!data/bad_encoding.log

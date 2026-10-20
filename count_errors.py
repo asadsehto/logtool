@@ -1,7 +1,10 @@
 from collections import Counter, deque
-
+import sys
+import os
 
 def parse_line(line):
+    if "\ufffd" in line:
+        raise ValueError("Line contains replacement character (bad encoding)")
     timestamp, ip, app, stream, event, status = line.split()
     return {
         "timestamp": timestamp,
@@ -12,7 +15,7 @@ def parse_line(line):
         "status": int(status),
     }
 
-logpath = "data/sample.log"
+logpath = "data/bad_encoding.log"
 errors = 0
 ip_counts = Counter()
 stream_counts = Counter()
@@ -21,8 +24,13 @@ last_errors = deque(maxlen=10)
 streams_by_app = {}
 badline = 0
 
-with open("data/broken.log") as f:
-    for linenumber, line in enumerate(f, start=1):
+try:
+    f = open(logpath, encoding="utf-8", errors="replace")
+except FileNotFoundError as e:
+    print(f"Error opening log file: {logpath} - {e}")
+    sys.exit(1)
+with f:
+     for linenumber, line in enumerate(f, start=1):
         try:
             entry = parse_line(line)
         except ValueError as e:
@@ -43,6 +51,7 @@ with open("data/broken.log") as f:
         if entry["app"] not in streams_by_app:
             streams_by_app[entry["app"]] = Counter()
         streams_by_app[entry["app"]][entry["stream"]] += 1
+
 
 print(f"Total errors: {errors}")
 print(f"Total bad lines: {badline}")
