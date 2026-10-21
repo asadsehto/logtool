@@ -1,10 +1,14 @@
 from collections import Counter, deque
 import sys
 import os
-
+import logging
+from venv import logger
 class LogFormatError(Exception):
     pass
 
+logging.basicConfig(level = os.environ.get("LOGLEVEL", "WARNING").upper(),
+                    format = "%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger("logtool")
 
 def parse_line(line):
     if "\ufffd" in line:
@@ -24,7 +28,7 @@ def parse_line(line):
         "status": int(status),
     }
 
-logpath = "data/bad_encoding.log"
+logpath = "data/broken.log"
 errors = 0
 ip_counts = Counter()
 stream_counts = Counter()
@@ -36,17 +40,18 @@ badline = 0
 try:
     f = open(logpath, encoding="utf-8", errors="replace")
 except FileNotFoundError as e:
-    print(f"Error opening log file: {logpath} - {e}")
+    logger.error("Error opening log file: %s - %s", logpath, e)
     sys.exit(1)
+logger.info("Processing log file: %s", logpath)
 with f:
      for linenumber, line in enumerate(f, start=1):
         try:
             entry = parse_line(line)
         except LogFormatError as e:
             badline += 1
-            print(f"Error parsing line {linenumber}: {line.rstrip()!r} - {e}")
+            logger.error("Error parsing line %d : %r - %s", linenumber, line.rstrip(), e)
             continue
-
+        logger.debug("Parsed line %d: %s", linenumber, entry)
         ip_counts[entry["ip"]] += 1
         stream_counts[entry["stream"]] += 1
 
