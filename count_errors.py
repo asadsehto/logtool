@@ -2,10 +2,19 @@ from collections import Counter, deque
 import sys
 import os
 
+class LogFormatError(Exception):
+    pass
+
+
 def parse_line(line):
     if "\ufffd" in line:
-        raise ValueError("Line contains replacement character (bad encoding)")
-    timestamp, ip, app, stream, event, status = line.split()
+        raise LogFormatError("contains characters that are not valid UTF-8")
+    fields = line.split()
+    if len(fields) != 6:
+        raise LogFormatError(f"expected 6 fields, got {len(fields)}")
+    timestamp, ip, app, stream, event, status = fields
+    if not status.isdigit():
+        raise LogFormatError(f"status is not a number: {status!r}")
     return {
         "timestamp": timestamp,
         "ip": ip,
@@ -33,7 +42,7 @@ with f:
      for linenumber, line in enumerate(f, start=1):
         try:
             entry = parse_line(line)
-        except ValueError as e:
+        except LogFormatError as e:
             badline += 1
             print(f"Error parsing line {linenumber}: {line.rstrip()!r} - {e}")
             continue
