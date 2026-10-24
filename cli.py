@@ -56,7 +56,7 @@ def print_reporrt(stats, badline, top):
     print()
     print("Last errors (oldest first):")
     for error in stats['last_errors']:
-        print(f"  {error['timestamp']}  {error['ip']}  {error['status']}")
+        print(f"  {error.timestamp}  {error.ip}  {error.status}  {error.app}  {error.stream}  {error.event}")
     print()
     print("Streams per app:")
     for app, streams in stats['streams_by_app'].items():
