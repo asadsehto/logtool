@@ -1,28 +1,25 @@
 from collections import Counter, deque
 
+class Report:
+    def __init__(self):
+        self.errors = 0
+        self.ip_counts = Counter()
+        self.stream_counts = Counter()
+        self.setvlive_ips = set()
+        self.last_errors = deque(maxlen=10)
+        self.streams_by_app = {}
 
-def new_stats():
-    return {
-        "errors": 0,
-        "ip_counts": Counter(),
-        "stream_counts": Counter(),
-        "setvlive_ips": set(),
-        "last_errors": deque(maxlen=10),
-        "streams_by_app": {},
-    }
-
-
-def add_entry(stats, entry):
-    stats["ip_counts"][entry.ip] += 1
-    stats["stream_counts"][entry.stream] += 1
+def add(self,entry):
+    self.ip_counts[entry.ip] += 1
+    self.stream_counts[entry.stream] += 1
 
     if entry.stream == "setvlive":
-        stats["setvlive_ips"].add(entry.ip)
+        self.setvlive_ips.add(entry.ip)
 
     if entry.status >= 400:
-        stats["errors"] += 1
-        stats["last_errors"].append(entry)
+        self.errors += 1
+        self.last_errors.append(entry)
 
-    if entry.app not in stats["streams_by_app"]:
-        stats["streams_by_app"][entry.app] = Counter()
-    stats["streams_by_app"][entry.app][entry.stream] += 1
+    if entry.app not in self.streams_by_app:
+        self.streams_by_app[entry.app] = Counter()
+    self.streams_by_app[entry.app][entry.stream] += 1

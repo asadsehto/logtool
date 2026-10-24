@@ -1,6 +1,6 @@
 from collections import Counter, deque
 from parser import parse_line , LogFormatError
-from stats import new_stats, add_entry
+from stats import Report, add
 import argparse
 import logging
 import sys
@@ -17,7 +17,7 @@ def main():
     argparser.add_argument("--top", type=int, default=3, help="Number of top IPs to display (default: 3)")
     args = argparser.parse_args()
     logpath = args.logfile
-    stats = new_stats()
+    stats = Report()
     badline = 0
     
     try:
@@ -35,31 +35,31 @@ def main():
                 logger.error("Error parsing line %d : %r - %s", linenumber, line.rstrip(), e)
                 continue
             logger.debug("Parsed line %d: %s", linenumber, entry)
-            add_entry(stats, entry)
+            add(stats, entry)
 
     print_reporrt(stats, badline, args.top)
 
 
 def print_reporrt(stats, badline, top):
-    print(f"Total errors: {stats['errors']}")
+    print(f"Total errors: {stats.errors}")
     print(f"Total bad lines: {badline}")
     print()
     print(f"Top {top} IPs:")
-    for ip, requests in stats['ip_counts'].most_common(top):
+    for ip, requests in stats.ip_counts.most_common(top):
         print(f"  {ip}: {requests}")
     print()
     print("Requests per stream:")
-    for stream, requests in stats['stream_counts'].most_common():
+    for stream, requests in stats.stream_counts.most_common():
         print(f"  {stream}: {requests}")
     print()
-    print(f"Different IPs on setvlive: {len(stats['setvlive_ips'])}")
+    print(f"Different IPs on setvlive: {len(stats.setvlive_ips)}")
     print()
     print("Last errors (oldest first):")
-    for error in stats['last_errors']:
+    for error in stats.last_errors:
         print(f"  {error.timestamp}  {error.ip}  {error.status}  {error.app}  {error.stream}  {error.event}")
     print()
     print("Streams per app:")
-    for app, streams in stats['streams_by_app'].items():
+    for app, streams in stats.streams_by_app.items():
         print(f"  {app}:")
         for stream, requests in streams.items():
             print(f"    {stream}: {requests}")
