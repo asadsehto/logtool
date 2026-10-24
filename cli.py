@@ -1,6 +1,7 @@
 from collections import Counter, deque
 import sys
 import os
+import argparse
 import logging
 from parser import parse_line , LogFormatError
 from stats import new_stats, add_entry
@@ -11,7 +12,12 @@ def main():
                     format = "%(asctime)s - %(levelname)s - %(message)s")
 
 
-    logpath = "data/broken.log"
+
+    argparser = argparse.ArgumentParser(description="Log file analysis tool")
+    argparser.add_argument("logfile", help="Path to the log file to analyze")
+    argparser.add_argument("--top", type=int, default=3, help="Number of top IPs to display (default: 3)")
+    args = argparser.parse_args()
+    logpath = args.logfile
     stats = new_stats()
     badline = 0
     
@@ -32,14 +38,14 @@ def main():
             logger.debug("Parsed line %d: %s", linenumber, entry)
             add_entry(stats, entry)
 
-    print_reporrt(stats, badline)
+    print_reporrt(stats, badline, args.top)
 
-def print_reporrt(stats, badline):
+def print_reporrt(stats, badline, top):
     print(f"Total errors: {stats['errors']}")
     print(f"Total bad lines: {badline}")
     print()
-    print("Top 3 IPs:")
-    for ip, requests in stats['ip_counts'].most_common(3):
+    print(f"Top {top} IPs:")
+    for ip, requests in stats['ip_counts'].most_common(top):
         print(f"  {ip}: {requests}")
     print()
     print("Requests per stream:")

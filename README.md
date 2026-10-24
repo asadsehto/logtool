@@ -19,6 +19,12 @@ uv sync
 ## Run
 
 ```bash
+uv run python cli.py data/sample.log
+uv run python cli.py data/broken.log --top 5
+uv run python cli.py --help
+```
+
+```bash
 uv run python count_errors.py
 ```
 
