@@ -1,6 +1,17 @@
 class LogFormatError(Exception):
     pass
 
+from dataclasses import dataclass
+
+@dataclass
+class LogEntry:
+    timestamp: str
+    ip: str
+    app: str
+    stream: str
+    event: str
+    status: int
+
 def parse_line(line):
     if "\ufffd" in line:
         raise LogFormatError("contains characters that are not valid UTF-8")
@@ -10,12 +21,4 @@ def parse_line(line):
     timestamp, ip, app, stream, event, status = fields
     if not status.isdigit():
         raise LogFormatError(f"status is not a number: {status!r}")
-    return {
-        "timestamp": timestamp,
-        "ip": ip,
-        "app": app,
-        "stream": stream,
-        "event": event,
-        "status": int(status),
-    }
-
+    return LogEntry(timestamp, ip, app, stream, event, int(status))

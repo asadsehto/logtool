@@ -1,17 +1,16 @@
 from collections import Counter, deque
-import sys
-import os
-import argparse
-import logging
 from parser import parse_line , LogFormatError
 from stats import new_stats, add_entry
+import argparse
+import logging
+import sys
+import os
+
 logger = logging.getLogger("logtool")
 
 def main():
     logging.basicConfig(level = os.environ.get("LOGLEVEL", "WARNING").upper(),
                     format = "%(asctime)s - %(levelname)s - %(message)s")
-
-
 
     argparser = argparse.ArgumentParser(description="Log file analysis tool")
     argparser.add_argument("logfile", help="Path to the log file to analyze")
@@ -40,6 +39,7 @@ def main():
 
     print_reporrt(stats, badline, args.top)
 
+
 def print_reporrt(stats, badline, top):
     print(f"Total errors: {stats['errors']}")
     print(f"Total bad lines: {badline}")
@@ -63,7 +63,7 @@ def print_reporrt(stats, badline, top):
         print(f"  {app}:")
         for stream, requests in streams.items():
             print(f"    {stream}: {requests}")
-
+    
 
 if __name__ == "__main__":
     main()

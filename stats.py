@@ -11,6 +11,7 @@ def new_stats():
         "streams_by_app": {},
     }
 
+
 def add_entry(stats, entry):
     stats["ip_counts"][entry["ip"]] += 1
     stats["stream_counts"][entry["stream"]] += 1
