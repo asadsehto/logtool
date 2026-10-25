@@ -1,5 +1,7 @@
 from collections import Counter, deque
 from parser import parse_line , LogFormatError
+from typing import Annotated
+import typer
 from stats import Report
 import argparse
 import logging
@@ -8,15 +10,18 @@ import os
 
 logger = logging.getLogger("logtool")
 
-def main()-> None:
+def main(
+            logfile: Annotated[str, typer.Argument(help="Path to the log file")],
+            top: Annotated[int, typer.Option(help="Number of top IPs to display")] = 3
+)-> None:
+    
+
+    
     logging.basicConfig(level = os.environ.get("LOGLEVEL", "WARNING").upper(),
                     format = "%(asctime)s - %(levelname)s - %(message)s")
 
-    argparser = argparse.ArgumentParser(description="Log file analysis tool")
-    argparser.add_argument("logfile", help="Path to the log file to analyze")
-    argparser.add_argument("--top", type=int, default=3, help="Number of top IPs to display (default: 3)")
-    args = argparser.parse_args()
-    logpath = args.logfile
+   
+    logpath = logfile
     stats = Report()
     badline = 0
     
@@ -37,7 +42,7 @@ def main()-> None:
             logger.debug("Parsed line %d: %s", linenumber, entry)
             stats.add(entry)
 
-    print_reporrt(stats, badline, args.top)
+    print_reporrt(stats, badline, top)
 
 
 def print_reporrt(stats: Report, badline: int, top: int) -> None:
@@ -66,4 +71,5 @@ def print_reporrt(stats: Report, badline: int, top: int) -> None:
     
 
 if __name__ == "__main__":
-    main()
+    
+  typer.run(main)
