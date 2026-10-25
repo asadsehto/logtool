@@ -3,7 +3,6 @@ from parser import parse_line , LogFormatError
 from typing import Annotated
 import typer
 from stats import Report
-import argparse
 import logging
 import sys
 import os
@@ -15,23 +14,26 @@ def main(
             top: Annotated[int, typer.Option(help="Number of top IPs to display")] = 3
 )-> None:
     
-
-    
     logging.basicConfig(level = os.environ.get("LOGLEVEL", "WARNING").upper(),
                     format = "%(asctime)s - %(levelname)s - %(message)s")
-
    
     logpath = logfile
-    stats = Report()
-    badline = 0
     
     try:
-        f = open(logpath, encoding="utf-8", errors="replace")
-    except FileNotFoundError as e:
-        logger.error("Error opening log file: %s - %s", logpath, e)
+        stats, badline = analyse_file(logpath)
+    except Exception as e:
+        logger.error("Error processing log file: %s - %s", logpath, e)
         sys.exit(1)
+
+    print_report(stats, badline, top)
+    
+def analyse_file(logpath: str)-> tuple[Report , int]:
+    stats = Report()
+    badline = 0
     logger.info("Processing log file: %s", logpath)
-    with f:
+
+    with open(logpath, encoding="utf-8", errors="replace") as f:
+         logger.info("Processing log file: %s", logpath)
          for linenumber, line in enumerate(f, start=1):
             try:
                 entry = parse_line(line)
@@ -41,11 +43,12 @@ def main(
                 continue
             logger.debug("Parsed line %d: %s", linenumber, entry)
             stats.add(entry)
+    return stats, badline
 
-    print_reporrt(stats, badline, top)
 
 
-def print_reporrt(stats: Report, badline: int, top: int) -> None:
+
+def print_report(stats: Report, badline: int, top: int) -> None:
     print(f"Total errors: {stats.errors}")
     print(f"Total bad lines: {badline}")
     print()
@@ -68,8 +71,6 @@ def print_reporrt(stats: Report, badline: int, top: int) -> None:
         print(f"  {app}:")
         for stream, requests in streams.items():
             print(f"    {stream}: {requests}")
-    
 
 if __name__ == "__main__":
-    
   typer.run(main)
