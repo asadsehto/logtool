@@ -12,7 +12,7 @@ class LogEntry:
     event: str
     status: int
 
-def parse_line(line):
+def parse_line(line: str) -> LogEntry:
     if "\ufffd" in line:
         raise LogFormatError("contains characters that are not valid UTF-8")
     fields = line.split()

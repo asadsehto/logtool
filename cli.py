@@ -1,6 +1,6 @@
 from collections import Counter, deque
 from parser import parse_line , LogFormatError
-from stats import Report, add
+from stats import Report
 import argparse
 import logging
 import sys
@@ -8,7 +8,7 @@ import os
 
 logger = logging.getLogger("logtool")
 
-def main():
+def main()-> None:
     logging.basicConfig(level = os.environ.get("LOGLEVEL", "WARNING").upper(),
                     format = "%(asctime)s - %(levelname)s - %(message)s")
 
@@ -35,12 +35,12 @@ def main():
                 logger.error("Error parsing line %d : %r - %s", linenumber, line.rstrip(), e)
                 continue
             logger.debug("Parsed line %d: %s", linenumber, entry)
-            add(stats, entry)
+            stats.add(entry)
 
     print_reporrt(stats, badline, args.top)
 
 
-def print_reporrt(stats, badline, top):
+def print_reporrt(stats: Report, badline: int, top: int) -> None:
     print(f"Total errors: {stats.errors}")
     print(f"Total bad lines: {badline}")
     print()
