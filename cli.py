@@ -25,7 +25,7 @@ def main(
 
     try:
         stats, badline = analyse_file(logpath)
-    except Exception as e:
+    except OSError as e:
         logger.error("Error processing log file: %s - %s", logpath, e)
         sys.exit(1)
 
@@ -35,7 +35,7 @@ def main(
 def analyse_file(logpath: str) -> tuple[Report, int]:
     stats = Report()
     badline = 0
-    logger.info("Processing log file: %s", logpath)
+
 
     with open(logpath, encoding="utf-8", errors="replace") as f:
         logger.info("Processing log file: %s", logpath)
